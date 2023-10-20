@@ -15,12 +15,24 @@ import os
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
+from streamlit_lottie import st_lottie
 import os
+import requests
+
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+chat_icon = load_lottieurl(
+    "https://lottie.host/b79f5040-0c8c-4c49-aed9-8a960bd22491/MeadGLI6fO.json")
 
 with st.sidebar:
-    st.title('💬LLM(Large Language Models) Chat App')
+    st.title('💬LLM (Large Language Models) Chat App')
     st.markdown('''
     ## These are some Links
+    - [GitHub Repository](https://github.com/teshchaudhary/Chat-PDF-App/tree/main)     
     - [GitHub](https://github.com/teshchaudhary)
     - [LinkedIn](https://www.linkedin.com/in/tesh-chaudhary/)
     ''')
@@ -30,9 +42,20 @@ with st.sidebar:
 
 load_dotenv()
 def main():
-    st.header("Chat with PDF 💬")
-    pdf = st.file_uploader("Upload your PDF", type = 'pdf')
+    with st.container():
+        left_column, centre_column, right_column = st.columns(3)
+        with left_column:
+            st_lottie(chat_icon, height = 100)
 
+        with centre_column:
+            st.header("ChatPDF App")
+            st.write(" ")
+            st.write(" ")
+
+        with right_column:
+            st.write(' ')
+    
+    pdf = st.file_uploader("Upload your PDF", type = 'pdf')
     # Will give error to seek for a pdf when not uploaded 
     # pdf_reader = PdfReader(pdf)
 
