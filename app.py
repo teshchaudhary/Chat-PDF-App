@@ -32,7 +32,7 @@ with st.sidebar:
     st.title('💬LLM (Large Language Models) Chat App')
     st.markdown('''
     ## These are some Links
-    - [GitHub Repository](https://github.com/teshchaudhary/Chat-PDF-App/tree/main)     
+    - [GitHub Repository](https://github.com/teshchaudhary/Chat-PDF-App)     
     - [GitHub](https://github.com/teshchaudhary)
     - [LinkedIn](https://www.linkedin.com/in/tesh-chaudhary/)
     ''')
