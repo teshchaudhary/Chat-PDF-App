@@ -6,6 +6,7 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
 import pickle
+
 # To split
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
@@ -35,6 +36,7 @@ for message in st.session_state["messages"]:
     elif message["role"] == "assistant":
         with  st.chat_message("assistant"):
             st.markdown(message["content"])
+            
 # Sidebar contents
 with st.sidebar:
     st.title('💬LLM (Large Language Models) Chat App')
@@ -76,6 +78,7 @@ def main():
     pdf = st.file_uploader("Upload your PDF", type = 'pdf')
     st.button("Submit")
 
+    # st.write(pdf)
     if pdf is not None:
         pdf_reader = PdfReader(pdf)
 
@@ -84,9 +87,9 @@ def main():
             text += page.extract_text()
 
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=200,
-            length_function=len
+            chunk_size = 1000,
+            chunk_overlap = 200,
+            length_function = len
         )
         chunks = text_splitter.split_text(text=text)
 
@@ -96,14 +99,15 @@ def main():
         if os.path.exists(f"{store_name}.pkl"):
             with open(f"{store_name}.pkl", "rb") as f:
                 VectorStore = pickle.load(f)
+            # st.write('Embeddings Loaded from the Disk')s
         else:
             embeddings = OpenAIEmbeddings()
             VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
             with open(f"{store_name}.pkl", "wb") as f:
                 pickle.dump(VectorStore, f)
 
-
-        query = st.text_input("What do you want to know?:")
+        # Accept user questions/query
+        query = st.text_input("Ask questions about your PDF file:")
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
         if query:
@@ -121,7 +125,7 @@ def main():
 
             CUSTOM_QUESTION_PROMPT = PromptTemplate.from_template(custom_template)
 
-            llm = OpenAIChat()
+            llm = OpenAIChat(model_name = 'gpt-3.5-turbo')
 
             conversation_chain =ConversationalRetrievalChain.from_llm(
                 llm,
