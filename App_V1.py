@@ -1,28 +1,25 @@
 import streamlit as st
-from streamlit_extras.add_vertical_space import add_vertical_space
-# For reading PDF files
-from PyPDF2 import PdfReader
-from dotenv import load_dotenv
-import pickle
-# To split
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-# To generate embedding
-from langchain.embeddings.openai import OpenAIEmbeddings
-# VectorStores
-from langchain.vectorstores import FAISS
-import os
-# LLM of OpenAI
-from langchain.llms import OpenAI
-from langchain.chains.question_answering import load_qa_chain
-from langchain.callbacks import get_openai_callback
 from streamlit_lottie import st_lottie
+from streamlit_extras.add_vertical_space import add_vertical_space
+
+from PyPDF2 import PdfReader
+
+from langchain.vectorstores import FAISS
+from langchain.llms import OpenAI, HuggingFaceHub
+from langchain.callbacks import get_openai_callback
+from langchain.chains.question_answering import load_qa_chain
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings.openai import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+
 import os
+import pickle
 import requests
+from dotenv import load_dotenv
 
 def load_lottieurl(url):
     r = requests.get(url)
     if r.status_code != 200:
-        return None
+        return "Connection Failed"
     return r.json()
 
 chat_icon = load_lottieurl(
@@ -37,7 +34,7 @@ with st.sidebar:
     - [LinkedIn](https://www.linkedin.com/in/tesh-chaudhary/)
     ''')
     add_vertical_space(5)
-    # Works as a print function of Python
+
     st.write('Made by Tesh Chaudhary')
 
 load_dotenv()
@@ -56,19 +53,20 @@ def main():
             st.write(' ')
     
     pdf = st.file_uploader("Upload your PDF", type = 'pdf')
+
     # Will give error to seek for a pdf when not uploaded 
     # pdf_reader = PdfReader(pdf)
 
     if pdf:
         # Reading PDF
         pdf_reader = PdfReader(pdf)
-        whole_text = ""
+        raw_text = ""
 
         # Data Extraction
         for page in pdf_reader.pages:
-            whole_text += page.extract_text()
+            raw_text += page.extract_text()
         
-        st.write(whole_text)
+        st.write(raw_text)
 
         # Now we need to split our data in smaller chunks because a limited amount of tokenization is available for the LLMs
 
@@ -82,10 +80,10 @@ def main():
             length_function = len   
             )
 
-        chunks = text_splitter.split_text(text = whole_text)
+        chunks = text_splitter.split_text(text = raw_text)
 
         store_name = pdf.name[:-4]
-        st.write(f'{store_name}')
+        # st.write(f'{store_name}')
         # st.write(chunks)
  
         # Using Pickle to load if a vector store is already present
@@ -95,30 +93,28 @@ def main():
             # st.write('Embeddings Loaded from the Disk')s
         else:
             # Now we need to convert these texts to embeddings to make it machine understandable
-            # embeddings
             embeddings = OpenAIEmbeddings()
+            # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
             VectorStore = FAISS.from_texts(chunks, embedding = embeddings)
-            # Using Pickle to save a vectorstore
+
             with open(f"{store_name}.pkl", "wb") as f:
                 pickle.dump(VectorStore, f)
  
-        # embeddings = OpenAIEmbeddings()
-        # VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
- 
         # Accept user questions/query
         query = st.text_input("Check My Knowledge:")
-        # st.write(query)
  
         if query:
             # To check the similarity between the vector stored embeddined texts and the query we have asked
             # k is representing how many references are there for the same query in out document.
             docs = VectorStore.similarity_search(query = query, k = 3)
             llm = OpenAI(model_name = 'gpt-3.5-turbo')
+            #llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
             chain = load_qa_chain(llm = llm, chain_type = "stuff")
             with get_openai_callback() as cb:
                 response = chain.run(input_documents = docs, question = query)
                 print(cb)
 
             st.write(response)
+            
 if __name__ == '__main__':
     main()
