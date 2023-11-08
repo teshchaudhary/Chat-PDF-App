@@ -1,12 +1,16 @@
 import streamlit as st
 import os
 
-path = '<YOUR_PATH>'
+path = 'D:\Internship_PearlThoughts\Chats'
 
 # Initialize chat_number using st.session_state
 if 'chat_number' not in st.session_state:
-    st.session_state.chat_number = 0
+    st.session_state.chat_number = 1
 
+chat_file = os.path.join(path, f'chat_number_1.txt')
+with open(chat_file, 'w') as fp:
+    pass
+    
 # Function to create a new chat
 def create_pdf():
     st.session_state.chat_number += 1
