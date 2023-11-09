@@ -9,7 +9,7 @@ from langchain.llms import OpenAI, HuggingFaceHub
 from langchain.callbacks import get_openai_callback
 from langchain.chains.question_answering import load_qa_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+from langchain.embeddings import OpenAIEmbeddings, HuggingFaceEmbeddings
 
 import os
 import pickle
@@ -105,8 +105,8 @@ def main():
             #         VectorStore = pickle.load(f)
             # else:
             # Now we need to convert these texts to embeddings
-            embeddings = OpenAIEmbeddings()
-            # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+            # embeddings = OpenAIEmbeddings()
+            embeddings = HuggingFaceEmbeddings(model_name="hkunlp/instructor-xl")
             VectorStore = FAISS.from_texts(chunks, embedding = embeddings)
 
             with open(f"{store_name}.pkl", "wb") as f:
@@ -124,8 +124,8 @@ def main():
                 with st.spinner("Searching for answers..."):
                     # To check the similarity between the vector stored embeddings and the query
                     docs = VectorStore.similarity_search(query = query, k=3)
-                    llm = OpenAI(model_name = 'gpt-3.5-turbo')
-                    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
+                    # llm = OpenAI(model_name = 'gpt-3.5-turbo')
+                    llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
                     chain = load_qa_chain(llm = llm, chain_type = "stuff")
                     response = chain.run(input_documents = docs, question = query)
                 st.write(response)
