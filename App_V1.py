@@ -106,7 +106,7 @@ def main():
             else:
                 # Now we need to convert these texts to embeddings
                 # embeddings = OpenAIEmbeddings()
-                embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+                embeddings = HuggingFaceEmbeddings(model_name="hkunlp/instructor-xl")
                 VectorStore = FAISS.from_texts(chunks, embedding = embeddings)
 
                 with open(f"{store_name}.pkl", "wb") as f:
