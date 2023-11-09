@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_extras.add_vertical_space import add_vertical_space
 
 from PyPDF2 import PdfReader
-
+import openai
 from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI, HuggingFaceHub
 from langchain.callbacks import get_openai_callback
