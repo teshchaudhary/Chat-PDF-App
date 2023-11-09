@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_lottie import st_lottie
+# from streamlit_lottie import st_lottie
 from streamlit_extras.add_vertical_space import add_vertical_space
 
 from PyPDF2 import PdfReader
@@ -22,8 +22,7 @@ def load_lottieurl(url):
         return "Connection Failed"
     return r.json()
 
-chat_icon = load_lottieurl(
-    "https://lottie.host/b79f5040-0c8c-4c49-aed9-8a960bd22491/MeadGLI6fO.json")
+# chat_icon = load_lottieurl("https://lottie.host/b79f5040-0c8c-4c49-aed9-8a960bd22491/MeadGLI6fO.json")
 
 with st.sidebar:
     st.title('💬LLM (Large Language Models) Chat App')
@@ -42,7 +41,8 @@ def main():
     with st.container():
         left_column, centre_column, right_column = st.columns(3)
         with left_column:
-            st_lottie(chat_icon, height = 100)
+            st.write(" ")
+            # st_lottie(chat_icon, height = 100)
 
         with centre_column:
             st.header("ChatPDF App")
