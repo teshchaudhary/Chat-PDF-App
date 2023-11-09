@@ -4,4 +4,4 @@ python-dotenv
 streamlit
 faiss-cpu
 streamlit-extras
-streamlit-lottie
+streamlit-lottie == 0.0.5
