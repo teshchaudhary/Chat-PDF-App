@@ -1,3 +1,8 @@
+import subprocess
+
+package_name = "streamlit-lottie"
+subprocess.call(["pip", "install", package_name])
+
 import streamlit as st
 from streamlit_lottie import st_lottie
 from streamlit_extras.add_vertical_space import add_vertical_space
