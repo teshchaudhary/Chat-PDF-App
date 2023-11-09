@@ -8,3 +8,4 @@ transformers
 requests
 python-dotenv
 tiktoken
+huggingface
