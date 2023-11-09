@@ -3,7 +3,6 @@ streamlit-lottie
 streamlit-extras
 PyPDF2
 langchain
-faiss
 openai
 transformers
 requests
