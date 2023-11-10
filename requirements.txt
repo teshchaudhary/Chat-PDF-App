@@ -2,8 +2,8 @@ streamlit
 streamlit-lottie
 streamlit-extras
 PyPDF2
-langchain
-openai
+langchain==0.0.316
+openai==0.28.1
 transformers
 requests
 python-dotenv
